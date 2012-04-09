@@ -35,7 +35,7 @@ module.exports = function (clients) {
               registered = true;
             }
             catch (err) {
-              console.err(err.toString());
+              console.error(err.toString());
             }
           }
         });
@@ -89,11 +89,11 @@ module.exports = function (clients) {
     if (match && typeof match[1] != 'undefined') {
       var uid = match[1];
       if (!isNaN(parseInt(uid))) {
-        clients.forEach(function (client) {
+        clients.forEach(function (client, index) {
           if (client.uid == uid) {
             socket.write('quit successed');
             client.destroy();
-            delete client;
+            delete clients[index];
           }
         });
       }
