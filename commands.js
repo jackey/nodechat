@@ -102,7 +102,7 @@ module.exports = function (clients) {
       var uid = match[1];
       var status = match[2];
       // Check params.
-      if (!uid || typeof uid == 'undefined' ) || isNaN(parseInt(uid))) {
+      if (!uid || typeof uid == 'undefined' || isNaN(parseInt(uid))) {
           socket.write('missed uid');
           return;
       }
@@ -114,7 +114,7 @@ module.exports = function (clients) {
           if (client.uid == uid) {
               // Here we go.
               // Just send status to client.
-              socket.write(status);
+              client.write(status);
           }
       });
   }
