@@ -22,15 +22,21 @@ module.exports = function (clients) {
         msg || (msg = '');
         var registered = false;
         clients.forEach(function (client) {
-          if (client.uid == uid) {
-              try {
-                 client.writeable = true;
-                 client.write(msg);
-              }
-              catch (err) {
-                  console.err(err);
-              }
-			  registered = true;
+          if (client.uid == uid) {		
+            try {
+			        var now  = parseInt((new Date()) /1000); // Unix timestamp;
+			        var ret = {
+				        uid:client.uid,
+				        sid:socket.uid,
+				        msg:msg,
+				        ts:now,
+			        };
+			        client.write(JSON.stringify(ret));
+              registered = true;
+            }
+            catch (err) {
+              console.err(err.toString());
+            }
           }
         });
         if (!registered) socket.write('user with ' + uid + ' not found');
@@ -47,10 +53,6 @@ module.exports = function (clients) {
   commands['register'] = function (socket, msg) {
     var spliter = /^(\S+)\s*(.*)$/;
     var match = msg.match(spliter);
-    if (!match) {
-        socket.write('missed command');
-        return;
-    }
     if (typeof match[1] != 'undefined') {
       var uid = match[1];
       var nickname = match[2];
@@ -67,6 +69,7 @@ module.exports = function (clients) {
           socket.uid = uid;
           socket.nickname = nickname;
           clients.push(socket);
+					//  socket.write('Registration successed.');
         }
         else {
           socket.write('user ' + uid + ' is already registered');
@@ -83,18 +86,14 @@ module.exports = function (clients) {
   commands['quit'] = function (socket, msg) {
     var spliter = /^(\S+)\s*(.*)$/;
     var match = msg.match(spliter);
-    if (!match) {
-        socket.write('missed command');
-        return;
-    }
     if (match && typeof match[1] != 'undefined') {
       var uid = match[1];
       if (!isNaN(parseInt(uid))) {
-        clients.forEach(function (client, index) {
+        clients.forEach(function (client) {
           if (client.uid == uid) {
             socket.write('quit successed');
             client.destroy();
-            delete clients[index];
+            delete client;
           }
         });
       }
@@ -112,10 +111,6 @@ module.exports = function (clients) {
   commands['status'] = function (socket, msg) {
       var spliter = /^(\S+)\s*(.*)$/;
       var match = msg.match(spliter);
-      if (!match) {
-          socket.write('missed command');
-          return;
-      }
       var uid = match[1];
       var status = match[2];
       // Check params.
@@ -135,5 +130,6 @@ module.exports = function (clients) {
           }
       });
   }
+  console.log(clients);
   return commands;
 }
