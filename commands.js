@@ -93,7 +93,7 @@ module.exports = function (clients) {
           if (client.uid == uid) {
             socket.write('quit successed');
             client.destroy();
-            delete clients[index];
+            clients.splice(index, 1);
           }
         });
       }
