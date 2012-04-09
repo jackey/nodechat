@@ -30,6 +30,7 @@ function newConnection(socket) {
     handlerOnSocketData(socket, data);
   });
   socket.on('error', function (error) {
+    socket.destory();
     handlerOnScoketError(socket, error);
   });
 }
